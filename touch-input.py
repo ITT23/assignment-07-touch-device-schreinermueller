@@ -13,11 +13,11 @@ if len(sys.argv) > 1:
 # Create a video capture object for the webcam
 cap = cv2.VideoCapture(video_id)
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-out = cv2.VideoWriter('palm.avi',fourcc, 20.0, (640, 480))
-out = cv2.VideoWriter('output.avi', -1, 20.0, (640,480))
+out = cv2.VideoWriter('sides.avi',fourcc, 20.0, (640, 480))
+# out = cv2.VideoWriter('output.avi', -1, 20.0, (640,480))
 #cap = cv2.VideoCapture('C:/Users/sinas/ITTCode/assignment-07-touch-device-schreinermueller/img_corner_1.avi')
 # mpHands = mp.solutions.hands
-# hands = mpHands.Hands()
+# hands = mpHands.Hands()s
 # mpDraw = mp.solutions.drawing_utils
 
 res_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -34,8 +34,6 @@ while True:
     ret, frame = cap.read()
     #cv2.imshow("frame", frame)
     out.write(frame)
-    # Convert the frame to grayscale
-    #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     img_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(img_gray, 90, 255, cv2.THRESH_BINARY)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -59,11 +57,19 @@ while True:
         img_marker = cv2.drawMarker(img_contours,
                                     fingertip,
                                     (0, 255, 0),
-                                    markerType=cv2.MARKER_CROSS
-                                    )
-        cv2.imshow('frame', img_marker)
+                                    markerType=cv2.MARKER_CROSS)
+        bounding_box = [(fingertip[0]-60, fingertip[1]-30), (fingertip[0], fingertip[1]+30)]
+
+        print(frame.shape)
+        box = frame[fingertip[1]-30:fingertip[1]+30, fingertip[0]-60:fingertip[0]]#, :]#, fingertip[1]-30:fingertip[1]+30]
+        print(box.shape)
+        #box_gray = cv2.cvtColor(box, cv2.COLOR_BGR2GRAY)
+        #ret, box_thresh = cv2.threshold(box_gray, 70, 255, cv2.THRESH_BINARY)
+        # wenn die meisten punkte in der bounding box nach diesem threshold weiß sind, ist es hovern
+        #img_rectangle = cv2.rectangle(img_marker, (fingertip[0]-60, fingertip[1]-30), (fingertip[0], fingertip[1]+30), (0, 255, 0), 3)
+        #cv2.imshow('frame', box_thresh)
     # Display the frame
-    #cv2.imshow('frame', img_contours)
+    cv2.imshow('frame', img_contours)
 
     # Wait for a key press and check if it's the 'q' key
     if cv2.waitKey(1) & 0xFF == ord('q'):
