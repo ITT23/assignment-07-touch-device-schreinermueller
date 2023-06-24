@@ -1,8 +1,5 @@
-
 import cv2
-import cv2.aruco as aruco
 import sys
-import numpy as np
 import time
 
 def centroid(max_contour):
@@ -35,14 +32,13 @@ if (cap.isOpened()== False):
 
 while True:
 
-
     # Capture a frame from the webcam
     ret, frame = cap.read()
     print(ret, frame)
 
     #out.write(frame)
     img_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    ret, thresh = cv2.threshold(img_gray, 90, 255, cv2.THRESH_BINARY) #90
+    ret, thresh = cv2.threshold(img_gray, 80, 255, cv2.THRESH_BINARY) #90
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     img_contours = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     img_contours = cv2.drawContours(img_contours, contours, -1, (255, 0, 0), 3)
