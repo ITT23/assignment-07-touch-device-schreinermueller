@@ -24,10 +24,20 @@ cap = cv2.VideoCapture(video_id)
 #fourcc = cv2.VideoWriter_fourcc(*'MJPG')
 #out = cv2.VideoWriter('sides.avi',fourcc, 20.0, (640, 480))
 
-cap = cv2.VideoCapture('sides.avi')
+cap = cv2.VideoCapture('videos/sides.avi')
 
 if (cap.isOpened()== False): 
   print("Error opening video stream or file")
+
+def calc_thresholds(frame_gray, tolerance):
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(frame_gray)
+    print("maxval: " + str(max_val))
+    print("minval: " + str(min_val))
+
+    threshold = ((max_val + min_val) // 2) - tolerance
+
+    return threshold
+
 
 
 while True:
@@ -38,7 +48,8 @@ while True:
 
     #out.write(frame)
     img_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    ret, thresh = cv2.threshold(img_gray, 80, 255, cv2.THRESH_BINARY) #90
+    threshold_value = calc_thresholds(img_gray, 30)
+    ret, thresh = cv2.threshold(img_gray, threshold_value, 255, cv2.THRESH_BINARY)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     img_contours = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     img_contours = cv2.drawContours(img_contours, contours, -1, (255, 0, 0), 3)
