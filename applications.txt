@@ -1,0 +1,3 @@
+rectangle C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Google Chrome.lnk
+pigtail C:\ProgramData\Microsoft\Windows\Start Menu\Programs\PowerPoint.lnk
+check C:/Users/sinas/AppData/Local/Programs/Microsoft VS Code/Code.exe
