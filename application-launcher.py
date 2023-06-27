@@ -3,6 +3,8 @@ import pyglet
 from pyglet import shapes
 import sys
 from unistroke_model import UniStroke
+from pynput.mouse import Button, Controller
+from DIPPID import SensorUDP
 
 
 # get applications and gestures from text file
@@ -28,6 +30,19 @@ line = []
 
 # init of lstm
 recognizer = UniStroke()
+
+# init of mouse controller for touch input -> triggers mouse click
+mouse = Controller()
+
+# use UPD (via WiFi) for communication
+PORT = 5700
+sensor = SensorUDP(PORT)
+
+def handle_sensordata(data):
+    mouse.position = (10, 20)
+    mouse.press(Button.left)
+    mouse.release(Button.left)
+
 
 # can quit window with q (?)
 @window.event
@@ -60,3 +75,8 @@ def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
 
 
 pyglet.app.run()
+
+
+sensor.register_callback('events', handle_sensordata)
+while True:
+    print(sensor.get_value('events'))

@@ -8,7 +8,6 @@ def handle_sensordata(data):
     print(data)
 
 
-#sensor.register_callback('accelerometer', handle_sensordata)
 sensor.register_callback('events', handle_sensordata)
 
 while True:
