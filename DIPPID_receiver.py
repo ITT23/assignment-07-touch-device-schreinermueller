@@ -11,5 +11,5 @@ def handle_sensordata(data):
 sensor.register_callback('events', handle_sensordata)
 
 while True:
-    print('capabilities: ', sensor.get_capabilities())
+    #print('capabilities: ', sensor.get_capabilities())
     print(sensor.get_value('events'))
