@@ -24,7 +24,7 @@ class UniStroke:
         # X_train, X_test, y_train, y_test, labels, self.encoder = prepare_data(data)
         # self.model_32, self.history_32 = create_model(X_train, X_test, y_train, y_test, labels)
         # self.model_32.save('gesture_recognition')
-        self.model_32 = keras.models.load_model("gesture_recognition")
+        self.model_32 = keras.models.load_model("task_03/gesture_recognition")
         self.encoder = LabelEncoder()
         labels = c.Gestures.THREE
         labels_encoded = self.encoder.fit_transform(labels)

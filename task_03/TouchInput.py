@@ -1,7 +1,13 @@
 import cv2
 import numpy as np
-from DIPPID_sender import Event
 import socket, json
+import os
+import sys
+import inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir) 
+from DIPPID_sender import Event
 
 class TouchInput:
     IP = '127.0.0.1'
@@ -32,7 +38,6 @@ class TouchInput:
     def touch_or_hover(self, img):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         median = np.median(img)
-        print(median)
         if int(median) < 70:
             return "hover"
         else:

@@ -1,7 +1,12 @@
 import os
 import pyglet
 from pyglet import shapes, clock
+import os
 import sys
+import inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir) 
 from unistroke_model import UniStroke
 from DIPPID import SensorUDP
 from TouchInput import TouchInput
@@ -10,7 +15,7 @@ from TouchInput import TouchInput
 gestures = []
 paths = []
 
-with open('applications.txt') as f:
+with open('task_03/applications.txt') as f:
     file = f.readlines()
 
 for line in file:
