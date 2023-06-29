@@ -15,7 +15,7 @@ class TouchInput:
     def __init__(self):
         self.event = Event()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.cap = cv2.VideoCapture('videos/hover.avi')
+        self.cap = cv2.VideoCapture('videos/pigtail.avi')
         self.res_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.res_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
@@ -46,40 +46,41 @@ class TouchInput:
 
     def touch_input(self, dt):
 
-        ret, frame = self.cap.read()
-        
-        # from https://stackoverflow.com/questions/11782147/python-opencv-contour-tree-hierarchy-structure
-        blue, green, red = cv2.split(frame)
-        # Run canny edge detection on each channel
-        blue_edges = self.median_canny(blue, 0.2, 0.3)
-        green_edges = self.median_canny(green, 0.2, 0.3)
-        red_edges = self.median_canny(red, 0.2, 0.3)
+        if self.cap.isOpened():
+            ret, frame = self.cap.read()
 
-        # Join edges back into image
-        edges = blue_edges | green_edges | red_edges
+            # from https://stackoverflow.com/questions/11782147/python-opencv-contour-tree-hierarchy-structure
+            blue, green, red = cv2.split(frame)
+            # Run canny edge detection on each channel
+            blue_edges = self.median_canny(blue, 0.2, 0.3)
+            green_edges = self.median_canny(green, 0.2, 0.3)
+            red_edges = self.median_canny(red, 0.2, 0.3)
 
-        contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        if hierarchy is not None and len(hierarchy) != 0:
-            hierarchy = hierarchy[0]  # get the actual inner list of hierarchy descriptions
-            event = Event()
-            # For each contour, find the bounding rectangle and draw it
-            for component in zip(contours, hierarchy):
-                currentContour = component[0]
-                currentHierarchy = component[1]
-                x, y, w, h = cv2.boundingRect(currentContour)
-                inputType = ""
-                if currentHierarchy[3] < 0:
-                    # these are the outermost parent components
-                    if w >= 50 and h > 30:
-                        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
-                        cv2.circle(frame, (int(x+(w/2)), int(y+(h/2))), 5, (255, 0, 0), 3)
-                        bounding_box = frame[y:y+h, x:x+w]
-                        if bounding_box.size > 0:
-                            # Display the bounding box image
-                            inputType = self.touch_or_hover(bounding_box)
+            # Join edges back into image
+            edges = blue_edges | green_edges | red_edges
 
-                        x, y = self.normalize(x+(w/2), y+(h/2))
-                        event.update(x, y, inputType)
+            contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            if hierarchy is not None and len(hierarchy) != 0:
+                hierarchy = hierarchy[0]  # get the actual inner list of hierarchy descriptions
+                event = Event()
+                # For each contour, find the bounding rectangle and draw it
+                for component in zip(contours, hierarchy):
+                    currentContour = component[0]
+                    currentHierarchy = component[1]
+                    x, y, w, h = cv2.boundingRect(currentContour)
+                    inputType = ""
+                    if currentHierarchy[3] < 0:
+                        # these are the outermost parent components
+                        if w >= 50 and h > 30:
+                            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
+                            cv2.circle(frame, (int(x+(w/2)), int(y+(h/2))), 5, (255, 0, 0), 3)
+                            bounding_box = frame[y:y+h, x:x+w]
+                            if bounding_box.size > 0:
+                                # Display the bounding box image
+                                inputType = self.touch_or_hover(bounding_box)
 
-            message = json.dumps(event.eventsDict)
-            self.sock.sendto(message.encode(), (self.IP, self.PORT))
+                            x, y = self.normalize(x+(w/2), y+(h/2))
+                            event.update(x, y, inputType)
+
+                message = json.dumps(event.eventsDict)
+                self.sock.sendto(message.encode(), (self.IP, self.PORT))
