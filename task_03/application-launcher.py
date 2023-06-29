@@ -4,6 +4,7 @@ from pyglet import shapes, clock
 import os
 import sys
 import inspect
+import time
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
@@ -69,20 +70,34 @@ def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
 
 # if gesture is drawn by touch input use this method
 def handle_sensordata(dt):
+    time.sleep(0.1)
     if not sensor.get_value('events') is None:
         for eventIdx in sensor.get_value('events'):
+            #time.sleep(0.1)
             event = sensor.get_value('events')[eventIdx]
+            print(event)
             if event['type'] == "touch":
                 # scale x and y for the pyglet window
                 x = float(event['x']) * window.width
                 y = float(event['y']) * window.height
                 # do the same as with the mouse input
                 line.append([x, y])
+                print(len(line))
                 point = shapes.Circle(x, y, radius=5, color=(255, 225, 255))
                 point.draw()
+                if len(line) >= 30:
+                    window.clear()
+                    if pyglet.window.mouse.LEFT:
+                        prediction = recognizer.predict_gesture(recognizer.model_32, recognizer.encoder, line)
+                        # if gesture is recognized as one of the 3 defined, start the corresponding application
+                        for gesture in gestures:
+                            if prediction == gesture:
+                                path = paths[gestures.index(gesture)]
+                                os.startfile(path)
+                        line.clear()
             # if finger is moving away from the glass predict a gesture
             elif event['type'] == 'hover':
-                if len(line) >= 10:
+                if len(line) >= 30:
                     window.clear()
                     if pyglet.window.mouse.LEFT:
                         prediction = recognizer.predict_gesture(recognizer.model_32, recognizer.encoder, line)
@@ -95,9 +110,9 @@ def handle_sensordata(dt):
 
 # init of DIPPID-sender and touch-detector
 touchInput = TouchInput()
-clock.schedule_interval(touchInput.touch_input, 0.1)
+clock.schedule_interval(touchInput.touch_input, 0.05)
 # receive DIPPID events
-clock.schedule_interval(handle_sensordata, 0.3)
+clock.schedule_interval(handle_sensordata, 0.05)
 
 pyglet.app.run()
 

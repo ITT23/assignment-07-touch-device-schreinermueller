@@ -15,7 +15,7 @@ class TouchInput:
     def __init__(self):
         self.event = Event()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.cap = cv2.VideoCapture('videos/dragging.avi')
+        self.cap = cv2.VideoCapture('videos/rectangle.avi')
         self.res_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.res_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
