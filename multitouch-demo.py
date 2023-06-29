@@ -1,12 +1,17 @@
 # task 2
 import pyglet
+from pyglet import clock
 import sys
 from MultitouchGame import MultitouchGame
 from DIPPID import SensorUDP
+from task_03.TouchInput import TouchInput
 
 # use UPD (via WiFi) for communication
 PORT = 5700
 sensor = SensorUDP(PORT)
+
+# fullscreen window
+window = pyglet.window.Window(fullscreen=True)
 
 move_array = []
 
@@ -40,8 +45,8 @@ def update(dt):
     if len(sensor.get_value('events')) > 0:
         # move
         if len(sensor.get_value("events")) == 1:
-            sensor_x = float(sensor.get_value("events")["1"]["x"])
-            sensor_y = float(sensor.get_value("events")["1"]["y"])
+            sensor_x = float(sensor.get_value("events")["0"]["x"])
+            sensor_y = float(sensor.get_value("events")["0"]["y"])
             x = int(sensor_x * window.width)
             y = int(sensor_y * window.height)
             touch.x = x
@@ -66,8 +71,8 @@ def update(dt):
         if len(sensor.get_value("events")) == 2:
             finger_coordinates = []
             for event_num in range(len(sensor.get_value("events"))):
-                sensor_x = float(sensor.get_value("events")[str(event_num+1)]["x"])
-                sensor_y = float(sensor.get_value("events")[str(event_num+1)]["y"])
+                sensor_x = float(sensor.get_value("events")[str(event_num)]["x"])
+                sensor_y = float(sensor.get_value("events")[str(event_num)]["y"])
                 x = int(sensor_x * window.width)
                 y = int(sensor_y * window.height)
                 finger_coordinates.append((x, y))
@@ -79,8 +84,8 @@ def update(dt):
 
 
 
-# fullscreen window
-window = pyglet.window.Window(1000, 600)
+# # fullscreen window
+# window = pyglet.window.Window(fullscreen=True)
 
 game = MultitouchGame()
 
@@ -98,6 +103,9 @@ def on_key_press(symbol, modifiers):
     if symbol == pyglet.window.key.Q:
         sys.exit(0)
 
+# init of DIPPID-sender and touch-detector
+touchInput = TouchInput()
+clock.schedule_interval(touchInput.touch_input, 0.05)
 
 pyglet.clock.schedule_interval(update, 0.01)
 pyglet.app.run()

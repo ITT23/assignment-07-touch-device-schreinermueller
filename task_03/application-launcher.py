@@ -82,7 +82,6 @@ def handle_sensordata(dt):
                 y = float(event['y']) * window.height
                 # do the same as with the mouse input
                 line.append([x, y])
-                print(len(line))
                 point = shapes.Circle(x, y, radius=5, color=(255, 225, 255))
                 point.draw()
                 if len(line) >= 30:
