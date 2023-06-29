@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 from DIPPID_sender import Event
 import socket, json
-from pynput.mouse import Button
 
 class TouchInput:
     IP = '127.0.0.1'
@@ -15,13 +14,6 @@ class TouchInput:
         self.res_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
 
-    def handle_sensordata(self, data):
-        print(data)
-        self.mouse.position = (10, 20)
-        self.mouse.press(Button.left)
-        self.mouse.release(Button.left)
-
-
     def normalize(self, x, y):
         if self.res_height > 0 and self.res_width > 0:
             x = x/self.res_width
@@ -29,14 +21,6 @@ class TouchInput:
 
         return x, y
 
-    def calc_thresholds(frame_gray, tolerance):
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(frame_gray)
-        print("maxval: " + str(max_val))
-        print("minval: " + str(min_val))
-
-        threshold = ((max_val + min_val) // 2) - tolerance
-
-        return threshold
     
     # from https://stackoverflow.com/questions/11782147/python-opencv-contour-tree-hierarchy-structure
     def median_canny(self, img, thresh1, thresh2):
@@ -94,8 +78,3 @@ class TouchInput:
 
             message = json.dumps(event.eventsDict)
             self.sock.sendto(message.encode(), (self.IP, self.PORT))
-
-
-
-
-
