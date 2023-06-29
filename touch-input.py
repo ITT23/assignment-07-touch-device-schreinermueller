@@ -75,6 +75,7 @@ while True:
 
     # Capture a frame from the webcam
     ret, frame = cap.read()
+    frame = cv2.flip(frame, 1)
     #print(ret, frame)
 
     #out.write(frame)
@@ -114,9 +115,11 @@ while True:
                     x, y = normalize(x+(w/2), y+(h/2))
                     event.update(x, y, inputType)
 
-        message = json.dumps(event.eventsDict)
-        print(message)
-        sock.sendto(message.encode(), (IP, PORT))
+        if len(event.eventsDict["events"]) < 5:
+            message = json.dumps(event.eventsDict)
+            print(message)
+            sock.sendto(message.encode(), (IP, PORT))
+
         #print(message)
 
         #img_contours = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

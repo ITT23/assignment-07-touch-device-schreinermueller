@@ -15,7 +15,7 @@ class TouchInput:
     def __init__(self):
         self.event = Event()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.cap = cv2.VideoCapture('videos/pigtail.avi')
+        self.cap = cv2.VideoCapture('videos/rectangle.avi')
         self.res_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.res_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
@@ -45,9 +45,9 @@ class TouchInput:
 
 
     def touch_input(self, dt):
-
         if self.cap.isOpened():
             ret, frame = self.cap.read()
+            frame = cv2.flip(frame, 1)
 
             # from https://stackoverflow.com/questions/11782147/python-opencv-contour-tree-hierarchy-structure
             blue, green, red = cv2.split(frame)
@@ -81,6 +81,7 @@ class TouchInput:
 
                             x, y = self.normalize(x+(w/2), y+(h/2))
                             event.update(x, y, inputType)
+                if len(event.eventsDict["events"]) < 5:
+                    message = json.dumps(event.eventsDict)
+                    self.sock.sendto(message.encode(), (self.IP, self.PORT))
 
-                message = json.dumps(event.eventsDict)
-                self.sock.sendto(message.encode(), (self.IP, self.PORT))

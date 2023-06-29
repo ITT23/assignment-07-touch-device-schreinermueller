@@ -14,6 +14,7 @@ sensor = SensorUDP(PORT)
 window = pyglet.window.Window(fullscreen=True)
 
 move_array = []
+resize_rotate_array = []
 
 # here coordinates start left bottom corner
 touch = pyglet.shapes.Circle(0, 0, 5, color=(255, 0, 0))
@@ -32,8 +33,7 @@ sensor.register_callback('events', handle_sensordata)
 #check if finger is in an image
 def in_image(point):
     images = [game.stairsSprite, game.tablesSprite, game.windowsSprite]
-    x = point[0]
-    y = point[1]
+    x, y = point
     for image in images:
         if image.x <= x <= image.x + image.width and image.y <= y <= image.y + image.height:
             return image
@@ -41,14 +41,17 @@ def in_image(point):
 
 
 def update(dt):
+    global move_array
+    global resize_rotate_array
 
     if len(sensor.get_value('events')) > 0:
         # move
+
         if len(sensor.get_value("events")) == 1:
             sensor_x = float(sensor.get_value("events")["0"]["x"])
             sensor_y = float(sensor.get_value("events")["0"]["y"])
             x = int(sensor_x * window.width)
-            y = int(sensor_y * window.height)
+            y = int(window.height - sensor_y * window.height)
             touch.x = x
             touch.y = y
             sprite = in_image((x, y))
@@ -58,15 +61,17 @@ def update(dt):
                 move_array.append((x, y))
             else:
                 move_array.append((x, y))
-                dist_x = move_array[0][0] - move_array[1][0]
-                dist_y = move_array[0][1] - move_array[1][1]
+                dist_x = -(move_array[0][0] - move_array[1][0])
+                dist_y = -(move_array[0][1] - move_array[1][1])
                 move_array.pop(0)
 
             if sprite is not None:
+                #print(dist_x, dist_y)
                 # hier quasi funktion für move
                 sprite.x = sprite.x + dist_x
                 sprite.y = sprite.y + dist_y
-
+            else:
+                move_array = []
         # resize or rotate
         if len(sensor.get_value("events")) == 2:
             finger_coordinates = []
@@ -74,13 +79,33 @@ def update(dt):
                 sensor_x = float(sensor.get_value("events")[str(event_num)]["x"])
                 sensor_y = float(sensor.get_value("events")[str(event_num)]["y"])
                 x = int(sensor_x * window.width)
-                y = int(sensor_y * window.height)
+                y = int(window.height - sensor_y * window.height)
                 finger_coordinates.append((x, y))
             #print(finger_coordinates)
+            resize_rotate_array.append(finger_coordinates)
             finger_one.x = finger_coordinates[0][0]
             finger_one.y = finger_coordinates[0][1]
             finger_two.x = finger_coordinates[1][0]
             finger_two.y = finger_coordinates[1][1]
+            print(resize_rotate_array)
+            if len(resize_rotate_array) == 2:
+                finger_coordinates_1 = resize_rotate_array[0]
+                finger_coordinates_2 = resize_rotate_array[1]
+                # fingercoords für die aktuelle und letzte position
+                finger_one_x_1, finger_one_y_1 = finger_coordinates_1[0]
+                finger_two_x_1, finger_two_y_1 = finger_coordinates_1[1]
+                finger_one_x_2, finger_one_y_2 = finger_coordinates_2[0]
+                finger_two_x_2, finger_two_y_2 = finger_coordinates_2[1]
+                scale_factor_1 = abs(finger_one_x_1 - finger_two_x_1) / window.width
+                scale_factor_2 = abs(finger_one_x_2 - finger_two_x_2) / window.width
+                if in_image(finger_coordinates_1[0]) and in_image(finger_coordinates_2[0]) and in_image(finger_coordinates_1[1]) and in_image(finger_coordinates_2[1]) is not None:
+                    sprite = in_image(finger_coordinates_1[0])
+                    print("scale FAKTOR: " + str(scale_factor_2)) #abziehen von der eigentlichen scale glaub ich
+                    sprite.scale = scale_factor_2
+                    resize_rotate_array.pop(0)
+                else:
+                    resize_rotate_array = []
+
 
 
 
