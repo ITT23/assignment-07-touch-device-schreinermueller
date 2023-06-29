@@ -5,7 +5,7 @@ import time
 import numpy
 
 from DIPPID_sender import Event
-import socket, time, json, random
+import socket, time, json
 
 
 
@@ -22,7 +22,7 @@ if len(sys.argv) > 1:
 
 # Create a video capture object for the webcam
 cap = cv2.VideoCapture(video_id)
-cap = cv2.VideoCapture('videos/scale.avi')
+cap = cv2.VideoCapture('videos/hover.avi')
 
 res_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 res_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))

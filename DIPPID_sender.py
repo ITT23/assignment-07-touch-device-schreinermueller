@@ -8,11 +8,11 @@ class Event:
 
 
   def update(self, x, y, inputType) -> None:
-    self.counter += 1
     self.x = x
     self.y = y
     self.type = inputType
     self.to_dict()
+    self.counter += 1
   
   def to_dict(self):
       self.eventsDict['events'][self.counter] = {
