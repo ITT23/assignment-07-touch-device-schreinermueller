@@ -87,16 +87,27 @@ def update(dt):
                 finger_two_x_1, finger_two_y_1 = finger_coordinates_1[1]
                 finger_one_x_2, finger_one_y_2 = finger_coordinates_2[0]
                 finger_two_x_2, finger_two_y_2 = finger_coordinates_2[1]
-                scale_factor_1 = abs(finger_one_x_1 - finger_two_x_1) / window.width
-                scale_factor_2 = abs(finger_one_x_2 - finger_two_x_2) / window.width
-                if game.in_image(finger_coordinates_1[0]) and game.in_image(finger_coordinates_2[0]) and game.in_image(finger_coordinates_1[1]) and game.in_image(finger_coordinates_2[1]) is not None:
-                    sprite = game.in_image(finger_coordinates_1[0])
-                    print("scale FAKTOR: " + str(scale_factor_2)) #abziehen von der eigentlichen scale glaub ich
-                    sprite.scale = scale_factor_2
-                    resize_rotate_array.pop(0)
-                else:
-                    resize_rotate_array = []
 
+                dist_x_1 = abs(finger_one_x_1 - finger_two_x_1) / window.width
+                dist_x_2 = abs(finger_one_x_2 - finger_two_x_2) / window.width
+                dist_y_1 = abs(finger_one_y_1 - finger_two_y_1) / window.width
+                dist_y_2 = abs(finger_one_y_2 - finger_two_y_2) / window.width
+                # wenn die x veränderung > als y veränderung dann resize (bin mir nicht sicher ob das als constraint gut ist)
+                if dist_x_1+dist_x_2 > dist_y_1+dist_y_2:
+                    if game.in_image(finger_coordinates_1[0]) and game.in_image(finger_coordinates_2[0]) and game.in_image(finger_coordinates_1[1]) and game.in_image(finger_coordinates_2[1]) is not None:
+                        sprite = game.in_image(finger_coordinates_1[0])
+                        sprite.scale -= 0.2
+                        resize_rotate_array.pop(0)
+                    else:
+                        resize_rotate_array = []
+                # wenn die x veränderung < als y veränderung dann rotate
+                else:
+                    if game.in_image(finger_coordinates_1[0]) and game.in_image(finger_coordinates_2[0]) and game.in_image(finger_coordinates_1[1]) and game.in_image(finger_coordinates_2[1]) is not None:
+                        sprite = game.in_image(finger_coordinates_1[0])
+                        sprite.rotate += 3
+                        resize_rotate_array.pop(0)
+                    else:
+                        resize_rotate_array = []
 
 # # fullscreen window
 # window = pyglet.window.Window(fullscreen=True)
