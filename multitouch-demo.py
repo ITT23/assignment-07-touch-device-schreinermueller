@@ -17,7 +17,7 @@ move_array = []
 resize_rotate_array = []
 
 # here coordinates start left bottom corner
-touch = pyglet.shapes.Circle(0, 0, 5, color=(255, 0, 0))
+touch = pyglet.shapes.Circle(0, 0, 5, color=(0, 255, 0))
 finger_one = pyglet.shapes.Circle(0, 0, 5, color=(0, 255, 0))
 finger_two = pyglet.shapes.Circle(0, 0, 5, color=(0, 255, 0))
 
@@ -36,7 +36,14 @@ def update(dt):
     game.get_sprite_corners()
 
     if len(sensor.get_value('events')) > 0:
-        # move
+        if sensor.get_value("events")["0"]["type"] == "touch":
+            touch.color = (255, 0, 0)
+            finger_one.color = (255, 0, 0)
+            finger_two.color = (255, 0, 0)
+        else:
+            touch.color = (0, 255, 0)
+            finger_one.color = (0, 255, 0)
+            finger_two.color = (0, 255, 0)
 
         if len(sensor.get_value("events")) == 1:
             sensor_x = float(sensor.get_value("events")["0"]["x"])
@@ -57,7 +64,6 @@ def update(dt):
                 move_array.pop(0)
 
             if sprite is not None:
-                # hier quasi funktion für move
                 game.move(sprite, dist_x, dist_y)
 
             else:
@@ -114,14 +120,14 @@ def update(dt):
                 bottom_left = False
                 upper_left = False
                 upper_right = False
-                delta = 200
+                delta = 50
 
                 for i in range(3):
                     for point in game.sprite_corners[i]:
                         x, y = point
                         dist_finger_1 = x - delta <= finger_one_x_1 <= x + delta and y - delta <= finger_one_y_1 <= y + delta
                         dist_finger_2 = x - delta <= finger_two_x_1 <= x + delta and y - delta <= finger_two_y_1 <= y + delta
-                        print(dist_finger_1, dist_finger_2)
+                        #print(dist_finger_1, dist_finger_2)
                         # bottom left corner
                         if i == 0:
                             if dist_finger_1 or dist_finger_2:
@@ -158,26 +164,6 @@ def update(dt):
                 else:
                     print("else")
                     resize_rotate_array = []
-
-
-
-                # wenn die x veränderung > als y veränderung dann resize (bin mir nicht sicher ob das als constraint gut ist)
-                # if dist_x_1+dist_x_2 > dist_y_1+dist_y_2:
-                #     if game.in_image(finger_coordinates_1[0]) and game.in_image(finger_coordinates_2[0]) and game.in_image(finger_coordinates_1[1]) and game.in_image(finger_coordinates_2[1]) is not None:
-                #         sprite = game.in_image(finger_coordinates_1[0])
-                #         sprite.scale -= 0.2
-                #         resize_rotate_array.pop(0)
-                #     else:
-                #         resize_rotate_array = []
-                # # wenn die x veränderung < als y veränderung dann rotate
-                # else:
-                #     if game.in_image(finger_coordinates_1[0]) and game.in_image(finger_coordinates_2[0]) and game.in_image(finger_coordinates_1[1]) and game.in_image(finger_coordinates_2[1]) is not None:
-                #         sprite = game.in_image(finger_coordinates_1[0])
-                #         sprite.rotation += 3
-                #         resize_rotate_array.pop(0)
-                #     else:
-                #         resize_rotate_array = []
-
 
 game = MultitouchGame()
 
