@@ -61,7 +61,7 @@ class MultitouchGame:
         x, y = point
         for image in self.images:
             # image.get_transformed_vertices()
-            if image.x <= x <= image.x + image.width and image.y <= y <= image.y + image.height:
+            if image.x - 50 <= x <= image.x + 50 + image.width and image.y - 50 <= y <= image.y + 50 + image.height:
                 return image
         return None
 

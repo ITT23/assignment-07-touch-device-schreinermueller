@@ -9,4 +9,4 @@ Building Process / Design Decisions:
 
 
 Usage Guide: <br>
-Default value for the video id of the camera us 2. If you want to test it with a recorded video, you can insert the path to the video instead of the video id in touch-input.py. To start the detection of the fingertips, run touch-input.py and place touch the glass surface. If you want to receive DIPPID events, you can also tun the DIPPID_receiver.py, which prints out a dictionary of the events that were detected in the current frame.
+Default value for the video id of the camera is 2. If you want to test it with a recorded video, you can insert the path to the video instead of the video id in touch-input.py. To start the detection of the fingertips, run touch-input.py and place touch the glass surface. If you want to receive DIPPID events, you can also tun the DIPPID_receiver.py, which prints out a dictionary of the events that were detected in the current frame.
